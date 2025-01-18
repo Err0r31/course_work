@@ -1,0 +1,16 @@
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+venv/
+
+db.sqlite3
+
+static/
+media/
+
+*.env
+*.ini
+
+*/migrations/
