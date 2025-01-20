@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="container mt-5 mb-5">
+        <h1 class="mb-4">{{ form.instance.id|yesno:"Редактировать задачу,Добавить задачу" }}</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="id_title">Заголовок задачи</label>
+                        {% render_field form.title class="form-control" %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_description">Описание задачи</label>
+                        {% render_field form.description class="form-control" %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_due_date">Срок выполнения</label>
+                        {% render_field form.due_date class="form-control" %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_status">Статус задачи</label>
+                        {% render_field form.status class="form-control" %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_priority">Приоритет</label>
+                        {% render_field form.priority class="form-control" %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_category">Категория</label>
+                        {% render_field form.category class="form-control" %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_tags">Теги</label>
+                        <div class="form-check">
+                            {% for tag in form.fields.tags.queryset %}
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" 
+                                           name="tags" 
+                                           id="id_tag_{{ tag.id }}" 
+                                           value="{{ tag.id }}"
+                                           {% if tag in form.instance.tags.all %}checked{% endif %}
+                                           class="form-check-input">
+                                    <label for="id_tag_{{ tag.id }}" class="form-check-label">{{ tag.name }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_attachments">Вложения</label>
+                        <input type="file" name="attachments" id="id_attachments" multiple class="form-control">
+                    </div>
+
+                    {% if form.instance.id %}
+                        <div class="form-group">
+                            <label>Прикрепленные файлы:</label>
+                            <ul>
+                                {% for attachment in form.instance.attachments.all %}
+                                    <li><a href="{{ attachment.file.url }}">{{ attachment.file.name }}</a></li>
+                                {% empty %}
+                                    <li>Нет вложений</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Сохранить</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <a href="{% url 'task_list' %}" class="btn btn-secondary mt-4">Назад к списку задач</a>
+{% endblock %}

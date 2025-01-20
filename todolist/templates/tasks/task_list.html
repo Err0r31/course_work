@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h1 class="text-center mb-4">Список задач</h1>
+    {% if tasks %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for task in tasks %}
+                <div class="col d-flex">
+                    <div class="card shadow-sm flex-grow-1">
+                        <div class="card-header d-flex justify-content-between">
+                            {% if task.category %}
+                                <span class="badge" style="background-color: {{ task.category.color }};">
+                                    {{ task.category.name }}
+                                </span>
+                            {% endif %}
+                            {% if task.priority %}
+                                <span class="badge" style="background-color: {{ task.priority.color }};">
+                                    {{ task.priority.level }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="card-title">
+                                    <a href="{% url 'task_detail' task.id %}">{{ task.title }}</a>
+                                </h5>
+                                <span class="badge border border-dark px-3 py-2" style="color: black;">
+                                    {% if task.status == 'pending' %}
+                                        Запланировано
+                                    {% elif task.status == 'in_progress' %}
+                                        В процессе
+                                    {% elif task.status == 'completed' %}
+                                        Завершено
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if task.description %}
+                                <p class="card-text"><strong>Описание:</strong> {{ task.description }}</p>
+                            {% else %}
+                                <p class="card-text"><strong>Описание:</strong> Нет описания</p>
+                            {% endif %}
+                            
+                            {% if task.due_date %}
+                                <p class="card-text"><strong>Срок выполнения:</strong> {{ task.due_date|date:"d.m.Y H:i" }}</p>
+                            {% else %}
+                                <p class="card-text"><strong>Срок выполнения:</strong> Не указан</p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            {% if task.tags.all %}
+                                <div>
+                                    {% for tag in task.tags.all %}
+                                        <span class="badge" style="background-color: {{ tag.color }}; color: white;">
+                                            {{ tag.name }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <small class="text-muted">Теги отсутствуют</small>
+                            {% endif %}
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a href="{% url 'task_edit' task.id %}" class="btn btn-primary btn-sm">Редактировать</a>
+                                <form action="{% url 'task_delete' task.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Задач пока нет
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
