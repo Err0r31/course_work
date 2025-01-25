@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
+from simple_history.models import HistoricalRecords
 
 class Priority(models.Model):
     level = models.CharField(max_length=50, verbose_name="Уровень приоритета")
@@ -58,6 +59,8 @@ class Task(models.Model):
     priority = models.ForeignKey(Priority, on_delete=models.SET_NULL, null=True, verbose_name="Приоритет")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Категория")
     tags = models.ManyToManyField(Tag, blank=True, verbose_name="Теги", related_name='tasks')
+
+    history = HistoricalRecords()
 
     def save(self, *args, **kwargs):
         if self.status == 'completed':
